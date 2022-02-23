@@ -1,0 +1,60 @@
+:root {
+  --text-primary: #333;
+  --bg-primary: #333;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+html, body {
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.btn {
+  border: 2px solid var(--text-primary);
+  padding: 6px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: inherit;
+  background-color: #fff;
+  transition: all 0.3s ease
+}
+.btn:hover {
+  background-color: #eee;
+}
+
+.page {
+  padding: 16px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 10px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  outline: none;
+  border: 2px solid var(--text-primary);
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: all .3s linear;
+}
+
+textarea.form-input {
+  resize: none;
+}
+
+.form-input:focus {
+  box-shadow: inset 1px 1px 5px rgba(0,0,0,0.3);
+}
