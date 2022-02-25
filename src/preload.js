@@ -1,10 +1,17 @@
 import { contextBridge } from 'electron'
-import { pictureRepo } from './app/repositories';
+import Picture from '@/models/picture';
+
+const picture = new Picture;
 
 const getPictures = () => {
-  return pictureRepo.get();
+  return picture.get();
 }
 
-contextBridge.exposeInMainWorld('db', {
+const storePicture = () => {
+  return picture.store();
+}
+
+contextBridge.exposeInMainWorld('api', {
   getPictures,
+  storePicture,
 });
