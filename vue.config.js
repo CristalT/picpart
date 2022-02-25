@@ -8,11 +8,6 @@ module.exports = defineConfig({
       entry: path.join(__dirname, './src/resources/main.js'),
     },
   },
-  pluginOptions: {
-    electronBuilder: {
-      preload: 'src/preload.js',
-    },
-  },
   configureWebpack: {
     resolve: {
       alias: {
