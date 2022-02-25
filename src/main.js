@@ -4,7 +4,7 @@ import Toast from './plugins/toast';
 import Loading from './plugins/loading';
 
 import router from './router'
-import App from './App.vue';
+import App from '../App.vue';
 
 // Font awesome
 import { library } from '@fortawesome/fontawesome-svg-core';
