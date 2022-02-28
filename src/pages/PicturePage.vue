@@ -14,7 +14,7 @@
             <button class="btn fix-img" @click="imgFixed = !imgFixed">
               {{ imgFixed ? 'Mover Imagen' : 'Fijar Imagen' }}
             </button>
-            <div class="point-layout" v-if="imgFixed" @mousemove="watchCoordinates" @click="catchCoordinates">
+            <div class="point-layout" v-if="imgFixed" @mousemove="watchPointCoordinates" @click="catchPointCoordinates">
               <ul>
                 <li
                   v-for="(point, index) of points"
@@ -76,13 +76,25 @@ export default {
       this.pic.position = { ...values };
     },
   },
+  mounted() {
+    const id = this.$route.params.id;
+    if (id) this.openPicture(id);
+  },
   methods: {
-    setImage(dataURL) {
+    openPicture(id) {
+      database.find('pictures', id).then((data) => {
+        this.name = data.name;
+        this.points = data.points;
+        this.setImage(data.picture.src, data.picture.position);
+        this.imgFixed = true;
+      });
+    },
+    setImage(dataURL, initialPosition = { left: 0, top: 0 }) {
       const img = document.createElement('img');
       const imgContainer = document.getElementById('img-container');
       img.src = dataURL;
       this.pic.src = dataURL;
-      this.movable = new MovableElement(img);
+      this.movable = new MovableElement(img, initialPosition);
       imgContainer.appendChild(img);
     },
     async save() {
@@ -110,11 +122,11 @@ export default {
         this.$loading(false);
       }
     },
-    watchCoordinates(evt) {
+    watchPointCoordinates(evt) {
       const { offsetX, offsetY } = evt;
       this.coor = { offsetX, offsetY };
     },
-    catchCoordinates() {
+    catchPointCoordinates() {
       if (this.selectedTool !== 'add') return;
       this.selectedPoint = { description: '', ...this.coor };
       this.points.push(this.selectedPoint);

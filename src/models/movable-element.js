@@ -1,16 +1,12 @@
 export default class MovableElement {
   offset = [0, 0];
   isDown = false;
-  elementPosition = {
-    left: 0,
-    top: 0,
-  }
 
-  constructor(element) {
+  constructor(element, initialPosition = { left: 0, top: 0 }) {
+    this.elementPosition = { ...initialPosition };
     this.element = element;
     this.element.style.position = 'absolute';
-    this.element.style.left = '0px';
-    this.element.style.top = '0px';
+    Object.assign(this.element.style, this.elementPosition);
     this.initEventListeners();
   }
 
