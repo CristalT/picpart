@@ -19,6 +19,7 @@
     "better-sqlite3-with-prebuilds": "^7.4.3",
     "core-js": "^3.8.3",
     "firebase": "^9.6.7",
+    "ramda": "^0.28.0",
     "vue": "^2.6.14",
     "vue-router": "^3.5.3"
   },
@@ -33,13 +34,15 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "vue-cli-plugin-electron-builder": "~2.1.1",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "webpack": "^5.69.1"
   },
   "eslintConfig": {
     "root": true,
     "env": {
       "node": true
     },
+    "globals": {"or": true},
     "extends": [
       "plugin:vue/essential",
       "eslint:recommended"

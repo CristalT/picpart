@@ -1,45 +1,45 @@
 <template>
   <div class="page">
-    <div class="row">
-      <file-uploader @change="setImage" />
-      <button class="btn" @click="reset">Reiniciar</button>
-      <button class="btn" @click="save">Guardar</button>
-      <router-link class="btn" to="/">Salir</router-link>
-    </div>
-    <div class="row">
-      <div class="col">
-        <input type="text" class="form-input" v-model="pic.name" placeholder="Nombre del despiece" />
-        <div id="img-container" class="img-crop">
-          <button class="btn fix-img" @click="imgFixed = !imgFixed">
-            {{ imgFixed ? 'Mover Imagen' : 'Fijar Imagen' }}
-          </button>
-          <div class="point-layout" v-if="imgFixed" @mousemove="watchCoordinates" @click="catchCoordinates">
-            <ul>
-              <li
-                v-for="(point, index) of points"
-                :key="index"
-                class="point"
-                :class="{ 'active-point': selectedPoint === points[index] }"
-                :style="{
-                  top: point.offsetY + 'px',
-                  left: point.offsetX + 'px',
-                }"
-                @click="openPoint(index)"
-              >
-                <div class="point-dot"></div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <textarea
-          ref="descriptionTextarea"
-          v-model="selectedPoint.description"
-          class="form-input"
-          placeholder="Ingrese descripción"
-        ></textarea>
+    <div class="container">
+      <div class="row">
+        <file-uploader @change="setImage" />
+        <button class="btn" @click="reset">Reiniciar</button>
+        <button class="btn" @click="save">Guardar</button>
+        <router-link class="btn" to="/">Salir</router-link>
       </div>
-      <div class="col">
-        <studio-toolbar @select="selectedTool = $event" />
+      <div class="row">
+        <div class="col">
+          <input type="text" class="form-input" v-model="name" placeholder="Nombre del despiece" />
+          <div id="img-container" class="img-crop">
+            <button class="btn fix-img" @click="imgFixed = !imgFixed">
+              {{ imgFixed ? 'Mover Imagen' : 'Fijar Imagen' }}
+            </button>
+            <div class="point-layout" v-if="imgFixed" @mousemove="watchCoordinates" @click="catchCoordinates">
+              <ul>
+                <li
+                  v-for="(point, index) of points"
+                  :key="index"
+                  class="point"
+                  :class="{ 'active-point': selectedPoint === points[index] }"
+                  :style="{
+                    top: point.offsetY + 'px',
+                    left: point.offsetX + 'px',
+                  }"
+                  @click="openPoint(index)">
+                  <div class="point-dot"></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <input
+            ref="descriptionTextarea"
+            v-model="selectedPoint.description"
+            class="form-input"
+            placeholder="Ingrese descripción" />
+        </div>
+        <div class="col">
+          <studio-toolbar @select="selectedTool = $event" />
+        </div>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@ import FileUploader from '@/components/FileUploader.vue';
 import StudioToolbar from '@/components/StudioToolbar.vue';
 import MovableElement from '@/models/movable-element';
 
-import { add } from '@/firebase.js';
+import database from '@/database';
 export default {
   components: { StudioToolbar, FileUploader },
   data() {
@@ -59,9 +59,9 @@ export default {
         offsetX: 0,
         offsetY: 0,
       },
+      name: '',
       pic: {
-        img: '',
-        name: '',
+        src: '',
         position: {},
       },
       points: [],
@@ -81,17 +81,28 @@ export default {
       const img = document.createElement('img');
       const imgContainer = document.getElementById('img-container');
       img.src = dataURL;
+      this.pic.src = dataURL;
       this.movable = new MovableElement(img);
       imgContainer.appendChild(img);
     },
     async save() {
+      if (
+        !or(
+          this.pic.src,
+          this.pic.name,
+          this.points.every((point) => point.description)
+        )
+      ) {
+        return this.$toast.negative('Faltan completar datos');
+      }
       this.$loading(true);
       const data = {
-        ...this.pic,
-        ...this.points,
+        name: this.name,
+        picture: this.pic,
+        points: this.points,
       };
       try {
-        await add('pictures', data);
+        await database.store('pictures', data);
         this.$toast.positive('Referencia guardada correctamente.');
       } catch (error) {
         this.$toast.negative('Ocurrió un error al guardar la referencia.');
@@ -115,10 +126,10 @@ export default {
       this.$refs.descriptionTextarea.focus();
     },
     reset() {
-      if(confirm('Se perderán los cambios, ¿desea continuar?')) {
+      if (confirm('Se perderán los cambios, ¿desea continuar?')) {
         this.points = [];
       }
-    }
+    },
   },
 };
 </script>

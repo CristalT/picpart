@@ -68,7 +68,8 @@ export default {
   font-size: 12px;
   position: fixed;
   top: 5px;
-  right: 5px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 999;
   display: block;
   padding: 16px 20px;

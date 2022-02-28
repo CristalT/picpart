@@ -13,6 +13,10 @@
 
 html, body {
   overflow: hidden;
+  background-color: #f4f5f7;
+}
+
+.container {
   background-color: #fff;
 }
 
@@ -31,6 +35,9 @@ html, body {
 
 .page {
   padding: 16px;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .row {
