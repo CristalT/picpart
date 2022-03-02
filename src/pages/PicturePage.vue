@@ -4,7 +4,7 @@
       <color-palette class="color-palette" @color="selectedColor = $event" />
       <div class="row">
         <div class="col">
-          <img-settings @image="setImage" @lock="imgFixed = $event">
+          <img-settings ref="imgSettings" @image="setImage" @lock="imgFixed = $event">
             <div class="point-layout" v-if="imgFixed" @mousemove="watchPointCoordinates" @click="catchPointCoordinates">
               <ul>
                 <li
@@ -27,7 +27,7 @@
           </img-settings>
 
           <input
-            :disabled="!selectedPoint.coor"
+            :disabled="!selectedPoint.offsetX || !selectedPoint.offsetY"
             ref="descriptionTextarea"
             v-model="selectedPoint.description"
             class="form-input point-description"
@@ -83,6 +83,7 @@ export default {
         this.name = data.name;
         this.points = data.points;
         this.setImage(data.picture.src, data.picture.position);
+        this.$refs.imgSettings.setImage(data.picture.src, data.picture.position);
         this.imgFixed = true;
       });
     },
@@ -101,11 +102,11 @@ export default {
       ) {
         return this.$toast.negative('Faltan completar datos');
       }
-      const imgName = prompt('Nombre de archivo:');
-      if (!imgName) return;
+      const name = prompt('Nombre de archivo:');
+      if (!name) return;
       this.$loading(true, { text: 'Guardando ...' });
       const data = {
-        name: this.name,
+        name,
         picture: this.pic,
         points: this.points,
       };
@@ -116,6 +117,7 @@ export default {
         this.$toast.negative('Ocurrió un error al guardar la referencia.');
       } finally {
         this.$loading(false);
+        this.$router.push('/');
       }
     },
     watchPointCoordinates(evt) {

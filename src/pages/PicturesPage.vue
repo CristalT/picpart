@@ -39,9 +39,10 @@ export default {
     },
   },
   async mounted() {
+    this.$loading(true);
     database.get('pictures').then((response) => {
       this.pictures = response.data.filter((picture) => picture.name).map((picture) => new BasicPicture(picture));
-    });
+    }).finally(() => this.$loading(false));
   },
 };
 </script>
