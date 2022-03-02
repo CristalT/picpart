@@ -1,19 +1,10 @@
 <template>
   <div class="page">
     <div class="container">
-      <div class="row">
-        <file-uploader @change="setImage" />
-        <button class="btn" @click="reset">Reiniciar</button>
-        <button class="btn" @click="save">Guardar</button>
-        <router-link class="btn" to="/">Salir</router-link>
-      </div>
+      <color-palette class="color-palette" @color="selectedColor = $event" />
       <div class="row">
         <div class="col">
-          <input type="text" class="form-input" v-model="name" placeholder="Nombre del despiece" />
-          <div id="img-container" class="img-crop">
-            <button class="btn fix-img" @click="imgFixed = !imgFixed">
-              {{ imgFixed ? 'Mover Imagen' : 'Fijar Imagen' }}
-            </button>
+          <img-settings @image="setImage" @lock="imgFixed = $event">
             <div class="point-layout" v-if="imgFixed" @mousemove="watchPointCoordinates" @click="catchPointCoordinates">
               <ul>
                 <li
@@ -24,21 +15,28 @@
                   :style="{
                     top: point.offsetY + 'px',
                     left: point.offsetX + 'px',
+                    backgroundColor: `rgba(${selectedColor}, 0.4)`,
                   }"
-                  @click="openPoint(index)">
-                  <div class="point-dot"></div>
+                  @click="openPoint(index)"
+                  @mouseover="isEditing = true"
+                  @mouseout="isEditing = false">
+                  <div class="point-dot" :style="{ backgroundColor: `rgb(${selectedColor})` }"></div>
                 </li>
               </ul>
             </div>
-          </div>
+          </img-settings>
+
           <input
+            :disabled="!selectedPoint.coor"
             ref="descriptionTextarea"
             v-model="selectedPoint.description"
-            class="form-input"
-            placeholder="Ingrese descripción" />
-        </div>
-        <div class="col">
-          <studio-toolbar @select="selectedTool = $event" />
+            class="form-input point-description"
+            placeholder="Ingrese descripción de la referencia" />
+          <div class="row justify-end gap-xs gral-options">
+            <button class="btn" @click="reset">Reiniciar</button>
+            <button class="btn" @click="save">Guardar</button>
+            <router-link class="btn" to="/">Salir</router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -46,13 +44,11 @@
 </template>
 
 <script>
-import FileUploader from '@/components/FileUploader.vue';
-import StudioToolbar from '@/components/StudioToolbar.vue';
-import MovableElement from '@/models/movable-element';
-
+import ColorPalette from '@/components/ColorPalette.vue';
 import database from '@/database';
+import ImgSettings from '@/components/ImgSettings.vue';
 export default {
-  components: { StudioToolbar, FileUploader },
+  components: { ColorPalette, ImgSettings },
   data() {
     return {
       coor: {
@@ -66,9 +62,10 @@ export default {
       },
       points: [],
       selectedPoint: {},
-      selectedTool: 'add',
+      selectedColor: null,
       movable: null,
       imgFixed: false,
+      isEditing: false,
     };
   },
   watch: {
@@ -89,14 +86,11 @@ export default {
         this.imgFixed = true;
       });
     },
-    setImage(dataURL, initialPosition = { left: 0, top: 0 }) {
-      const img = document.createElement('img');
-      const imgContainer = document.getElementById('img-container');
-      img.src = dataURL;
+    setImage({ dataURL, movableElement }) {
+      this.movable = movableElement;
       this.pic.src = dataURL;
-      this.movable = new MovableElement(img, initialPosition);
-      imgContainer.appendChild(img);
     },
+
     async save() {
       if (
         !or(
@@ -107,7 +101,9 @@ export default {
       ) {
         return this.$toast.negative('Faltan completar datos');
       }
-      this.$loading(true);
+      const imgName = prompt('Nombre de archivo:');
+      if (!imgName) return;
+      this.$loading(true, { text: 'Guardando ...' });
       const data = {
         name: this.name,
         picture: this.pic,
@@ -127,13 +123,13 @@ export default {
       this.coor = { offsetX, offsetY };
     },
     catchPointCoordinates() {
-      if (this.selectedTool !== 'add') return;
+      if (!this.selectedColor || this.isEditing) return;
       this.selectedPoint = { description: '', ...this.coor };
       this.points.push(this.selectedPoint);
       this.$refs.descriptionTextarea.focus();
     },
     openPoint(index) {
-      if (this.selectedTool !== 'edit') return;
+      this.isEditing = true;
       this.selectedPoint = this.points[index];
       this.$refs.descriptionTextarea.focus();
     },
@@ -150,31 +146,17 @@ export default {
 ul {
   list-style: none;
 }
-.studio {
-  display: flex;
-}
-.img-crop {
-  margin: 5px 0 5px 0;
-  position: relative;
-  height: 600px;
-  width: 800px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background-color: #eee;
-  border-radius: 6px;
-  z-index: 0;
-}
-.img-crop img {
-  width: 100%;
+.color-palette {
+  position: absolute;
+  right: 24px;
+  top: 16px;
 }
 .point-layout {
   position: absolute;
   width: 100%;
   height: 100%;
   z-index: 1;
+  cursor: pointer;
 }
 .point {
   position: absolute;
@@ -183,7 +165,6 @@ ul {
   justify-content: center;
   width: 32px;
   height: 32px;
-  background-color: rgba(216, 15, 176, 0.44);
   border-radius: 100%;
   transform: translate(-16px, -16px);
   transition: all 0.5s ease;
@@ -198,12 +179,14 @@ ul {
   width: 8px;
   height: 8px;
   border-radius: 16px;
-  background-color: rgb(255, 0, 204);
 }
-.fix-img {
-  z-index: 2;
-  position: absolute;
-  top: 5px;
-  right: 5px;
+.point-description {
+  font-size: 14px;
+  margin: 4px 16px;
+  width: 765px !important;
+}
+.gral-options {
+  margin: 8px 16px;
+  padding-bottom: 16px;
 }
 </style>

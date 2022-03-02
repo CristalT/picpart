@@ -1,6 +1,6 @@
 <template>
   <div class="btn file-uploader" @click="openBrowser">
-    <span>Seleccionar imagen</span>
+    <span>{{ label }}</span>
     <input type="file" ref="inputFile" @change="readImage" />
   </div>
 </template>
@@ -8,6 +8,12 @@
 <script>
 export default {
   name: 'FileUploader',
+  props: {
+    label: {
+      type: String,
+      default: 'Seleccionar imagen',
+    },
+  },
   methods: {
     openBrowser() {
       this.$refs.inputFile.click();
@@ -21,8 +27,8 @@ export default {
       };
       fileReader.readAsDataURL(file);
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

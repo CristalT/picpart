@@ -10,6 +10,15 @@ export default class MovableElement {
     this.initEventListeners();
   }
 
+  zoom(value) {
+    this.element.width += value;
+    let { left, top } = this.element.style;
+    left = left.replace('px', '');
+    top = top.replace('px', '');
+    this.element.style.left = `${(left - (value / 2))}px`
+    this.element.style.top = `${(top - (value / 2))}px`
+  }
+
   initEventListeners() {
     this.element.addEventListener(
       'mousedown',
