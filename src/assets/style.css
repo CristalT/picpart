@@ -32,6 +32,12 @@ ul {
   justify-content: center;
   border-radius: 18px;
 }
+.flex {
+  display: flex;
+}
+.align-center {
+  align-items: center;
+}
 
 .btn {
   border: 1px solid #ccc;

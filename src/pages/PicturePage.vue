@@ -1,10 +1,10 @@
 <template>
-  <div class="page">
+  <div class="page flex align-center">
     <div class="container">
       <color-palette class="color-palette" @color="selectedColor = $event" />
       <div class="row">
         <div class="col">
-          <img-settings ref="imgSettings" @image="setImage" @lock="imgFixed = $event">
+          <img-settings ref="imgSettings" :title="name" :is-locked="imgFixed" :editable="!$route.params.id" @image="setImage" @lock="imgFixed = $event">
             <div class="point-layout" v-if="imgFixed" @mousemove="watchPointCoordinates" @click="catchPointCoordinates">
               <ul>
                 <li
@@ -33,8 +33,8 @@
             class="form-input point-description"
             placeholder="Ingrese descripción de la referencia" />
           <div class="row justify-end gap-xs gral-options">
-            <button class="btn" @click="reset">Reiniciar</button>
-            <button class="btn" @click="save">Guardar</button>
+            <button class="btn" @click="reset" v-if="!$route.params.id">Reiniciar</button>
+            <button class="btn" @click="save" v-if="!$route.params.id">Guardar</button>
             <router-link class="btn" to="/">Salir</router-link>
           </div>
         </div>
@@ -79,13 +79,14 @@ export default {
   },
   methods: {
     openPicture(id) {
+      this.$loading(true);
       database.find('pictures', id).then((data) => {
         this.name = data.name;
         this.points = data.points;
         this.setImage(data.picture.src, data.picture.position);
         this.$refs.imgSettings.setImage(data.picture.src, data.picture.position);
         this.imgFixed = true;
-      });
+      }).finally(() => this.$loading(false));
     },
     setImage({ dataURL, movableElement }) {
       this.movable = movableElement;
