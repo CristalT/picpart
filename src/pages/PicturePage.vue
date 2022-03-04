@@ -126,7 +126,7 @@ export default {
       this.coor = { offsetX, offsetY };
     },
     catchPointCoordinates() {
-      if (!this.selectedColor || this.isEditing) return;
+      if (!this.selectedColor || this.isEditing || this.$route.params.id) return;
       this.selectedPoint = { description: '', ...this.coor };
       this.points.push(this.selectedPoint);
       this.$refs.descriptionTextarea.focus();
