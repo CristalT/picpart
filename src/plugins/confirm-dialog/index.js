@@ -22,9 +22,9 @@ const install = (Vue) => {
     }
     const deferred = defer();
     confirmView(message).$on('ok', () => {
-      deferred.resolve();
+      deferred.resolve(true);
     }).$on('cancel', () => {
-      deferred.reject();
+      deferred.resolve(false);
     });
     return deferred.promise;
   };
