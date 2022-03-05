@@ -46,14 +46,19 @@ export default {
 .custom__table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
 }
 
 .custom__table thead {
   border-bottom: 1px solid #555;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #666;
 }
 .custom__table thead tr td {
+  color: #fff;
   padding: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
 }
 .custom__table tbody tr td {
@@ -63,6 +68,8 @@ export default {
 }
 .custom__table tbody tr {
   transition: all 0.3s ease;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
 }
 .custom__table tbody tr:hover {
   background-color: #eee;
