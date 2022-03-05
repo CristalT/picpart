@@ -1,21 +1,23 @@
 <template>
-  <div class="page">
-    <div class="row">
-      <router-link class="btn" to="picture">Nueva imagen</router-link>
-    </div>
+<div>
+  <header-menu />
+  <div class="page wrapper">
     <div class="row">
       <custom-table :data="pictures" :columns="columns" @click="openPicture" />
     </div>
   </div>
+</div>
 </template>
 
 <script>
 import database from '@/database';
+import HeaderMenu from '@/components/HeaderMenu.vue';
 import CustomTable from '@/components/CustomTable.vue';
 import BasicPicture from '@/models/basic-picture';
 
 export default {
   components: {
+    HeaderMenu,
     CustomTable,
   },
   data() {

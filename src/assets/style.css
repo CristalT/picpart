@@ -32,6 +32,11 @@ ul {
   justify-content: center;
   border-radius: 18px;
 }
+.wrapper {
+  margin: 0 auto;
+  width: 1200px;
+}
+
 .flex {
   display: flex;
 }
