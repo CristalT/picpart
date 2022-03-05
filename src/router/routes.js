@@ -5,8 +5,13 @@ export default [
     name: 'pictures',
   },
   {
-    path: '/picture/:id?',
-    component: () => import('@/pages/PicturePage.vue'),
-    name: 'picture',
+    path: '/picture',
+    component: () => import('@/pages/CreatePicture.vue'),
+    name: 'picture.create',
   },
+  {
+    path: '/picture/:id',
+    component: () => import('@/pages/OpenPicture.vue'),
+    name: 'picture.open',
+  }
 ];

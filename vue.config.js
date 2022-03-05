@@ -6,7 +6,8 @@ module.exports = defineConfig({
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({
-        or: ['ramda', 'or']
+        or: ['ramda', 'or'],
+        and: ['ramda', 'and']
       }),
     ],
   },

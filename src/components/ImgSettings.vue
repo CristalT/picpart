@@ -2,7 +2,7 @@
   <div>
     <div class="row gap-xs padding-sm" v-if="editable">
       <div class="col">
-        <file-uploader :label="img ? 'Cambiar imagen' : 'Seleccionar imagen'" @change="setImage" />
+        <file-uploader :label="img ? 'Cambiar imagen' : 'Seleccionar imagen'" @change="loadImage" />
       </div>
       <div class="col">
         <div class="row gap-xs">
@@ -57,18 +57,46 @@ export default {
     },
   },
   methods: {
-    setImage(dataURL, initialPosition = { left: 0, top: 0 }) {
-      this.img = document.createElement('img');
+    newImageElement(dataURL) {
+      const existingPic = document.getElementById('picture');
+      if (existingPic) {
+        existingPic.parentNode.removeChild(existingPic);
+      }
+
+      const img = document.createElement('img');
+      img.setAttribute('src', dataURL)
+      img.setAttribute('id', 'picture');
+      return img;
+    },
+    loadImage(dataURL) {
+      this.img = this.newImageElement(dataURL)
       const imgContainer = document.getElementById('canvas');
-      this.img.src = dataURL;
-      this.movable = new MovableElement(this.img, initialPosition);
+      this.movable = new MovableElement(this.img);
       imgContainer.appendChild(this.img);
       this.locked = false;
       this.$emit('image', {
-        dataURL,
+        src: dataURL,
         movable: this.movable,
       });
     },
+
+    /**
+     * This method is used on open a picture
+     * it hasn't edition abilities.
+     */
+    setImage(picture) {
+      const img = this.newImageElement(picture.src)
+      const imgContainer = document.getElementById('canvas');
+
+      img.style.left = picture.position.left;
+      img.style.top = picture.position.top;
+      img.width = picture.dimension.width;
+
+      this.locked = true;
+
+      imgContainer.appendChild(img);
+    },
+
     lock() {
       this.locked = !this.locked;
       this.$emit('lock', this.locked);

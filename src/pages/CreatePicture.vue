@@ -4,7 +4,13 @@
       <color-palette class="color-palette" @color="selectedColor = $event" />
       <div class="row">
         <div class="col">
-          <img-settings ref="imgSettings" :title="name" :is-locked="imgFixed" :editable="!$route.params.id" @image="setImage" @lock="imgFixed = $event">
+          <img-settings
+            ref="imgSettings"
+            :title="name"
+            :is-locked="imgFixed"
+            :editable="!$route.params.id"
+            @image="setImage"
+            @lock="imgFixed = $event">
             <div class="point-layout" v-if="imgFixed" @mousemove="watchPointCoordinates" @click="catchPointCoordinates">
               <ul>
                 <li
@@ -17,9 +23,7 @@
                     left: point.offsetX + 'px',
                     backgroundColor: `rgba(${selectedColor}, 0.4)`,
                   }"
-                  @click="openPoint(index)"
-                  @mouseover="isEditing = true"
-                  @mouseout="isEditing = false">
+                  @click="openPoint(index)">
                   <div class="point-dot" :style="{ backgroundColor: `rgb(${selectedColor})` }"></div>
                 </li>
               </ul>
@@ -32,10 +36,16 @@
             v-model="selectedPoint.description"
             class="form-input point-description"
             placeholder="Ingrese descripción de la referencia" />
-          <div class="row justify-end gap-xs gral-options">
-            <button class="btn" @click="reset" v-if="!$route.params.id">Reiniciar</button>
-            <button class="btn" @click="save" v-if="!$route.params.id">Guardar</button>
-            <router-link class="btn" to="/">Salir</router-link>
+          <div class="row justify-between gral-options">
+            <div>
+              <button class="btn mr-sm" @click="reset" v-if="!$route.params.id">Reiniciar</button>
+              <router-link class="btn" to="/">Salir</router-link>
+            </div>
+            <div>
+              <button class="btn btn-default" @click="save" v-if="!$route.params.id">
+                Guardar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,6 +69,7 @@ export default {
       pic: {
         src: '',
         position: {},
+        dimension: {},
       },
       points: [],
       selectedPoint: {},
@@ -68,41 +79,19 @@ export default {
       isEditing: false,
     };
   },
-  watch: {
-    'movable.elementPosition': function (values) {
-      this.pic.position = { ...values };
-    },
-  },
   mounted() {
-    const id = this.$route.params.id;
-    if (id) this.openPicture(id);
+    window.app.$on('pic', (val) => {
+      this.pic.src = val.src,
+      this.pic.position = { left: val.left, top: val.top }
+      this.pic.dimension = { width: val.width }
+    })
   },
   methods: {
-    openPicture(id) {
-      this.$loading(true);
-      database.find('pictures', id).then((data) => {
-        this.name = data.name;
-        this.points = data.points;
-        this.setImage(data.picture.src, data.picture.position);
-        this.$refs.imgSettings.setImage(data.picture.src, data.picture.position);
-        this.imgFixed = true;
-      }).finally(() => this.$loading(false));
-    },
     setImage({ dataURL, movableElement }) {
       this.movable = movableElement;
       this.pic.src = dataURL;
     },
-
     async save() {
-      if (
-        !or(
-          this.pic.src,
-          this.pic.name,
-          this.points.every((point) => point.description)
-        )
-      ) {
-        return this.$toast.negative('Faltan completar datos');
-      }
       const name = prompt('Nombre de archivo:');
       if (!name) return;
       this.$loading(true, { text: 'Guardando ...' });

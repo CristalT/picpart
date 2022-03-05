@@ -41,7 +41,8 @@
       "node": true
     },
     "globals": {
-      "or": true
+      "or": true,
+      "and": true
     },
     "extends": [
       "plugin:vue/essential",

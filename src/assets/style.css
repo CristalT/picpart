@@ -58,8 +58,8 @@ ul {
 .btn:hover {
   background-color: #eee;
 }
-.btn.btn-default:hover {
-  background-color: #555;
+.btn.btn-default:hover, .btn-default:disabled:hover {
+  background-color: #555 !important;
   border-color: var(--bg-primary) !important;
 }
 .btn:disabled {
@@ -93,6 +93,13 @@ ul {
 .justify-end {
   justify-content: end;
 }
+.justify-between {
+  justify-content: space-between;
+}
+
+.mr-sm {
+  margin-right: 5px;
+}
 
 .form-input {
   width: 100%;
@@ -118,4 +125,16 @@ textarea.form-input {
 
 .form-input:focus {
   box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip {
+  background-color: #fcecb8;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+  border: 1px solid;
+  border-radius: 4px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  font-size: 0.8rem;
 }

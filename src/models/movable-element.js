@@ -7,6 +7,7 @@ export default class MovableElement {
     this.element = element;
     this.element.style.position = 'absolute';
     Object.assign(this.element.style, this.elementPosition);
+    this.emitChange();
     this.initEventListeners();
   }
 
@@ -17,6 +18,16 @@ export default class MovableElement {
     top = top.replace('px', '');
     this.element.style.left = `${(left - (value / 2))}px`
     this.element.style.top = `${(top - (value / 2))}px`
+    this.emitChange()
+  }
+
+  emitChange() {
+    window.app.$emit('pic', {
+      src: this.element.src,
+      width: this.element.width,
+      left: this.element.style.left,
+      top: this.element.style.top,
+    })
   }
 
   initEventListeners() {
@@ -51,6 +62,7 @@ export default class MovableElement {
             top: this.mousePosition.y + this.offset[1] + 'px',
           };
           Object.assign(this.element.style, this.elementPosition);
+          this.emitChange()
         }
       },
       true
