@@ -2,25 +2,36 @@
   <table class="custom__table">
     <thead>
       <tr v-if="columns.length">
-        <td v-for="col in columns" :key="col.field">{{ col.name }}</td>
+        <td v-for="col of columns" :key="col.field">{{ col.name }}</td>
       </tr>
     </thead>
-    <tbody>
+    <tbody v-if="!loading">
       <tr v-for="(row, index) of rows" :key="index" @click="emitClick(row)">
         <td v-for="(cel, index) in row" :key="index">{{ cel }}</td>
+      </tr>
+    </tbody>
+    <tbody v-else>
+      <tr>
+        <td :colspan="columns.length">
+          <loading-spinner />
+        </td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
+
 export default {
+  components: { LoadingSpinner },
   props: {
     data: {
       type: Array,
       required: true,
     },
     columns: Array,
+    loading: Boolean,
   },
   computed: {
     rows() {
@@ -35,7 +46,9 @@ export default {
   },
   methods: {
     emitClick(row) {
-      const selectedRow = this.data.find((item) => Object.values(row).every((val) => Object.values(item).includes(val)));
+      const selectedRow = this.data.find((item) =>
+        Object.values(row).every((val) => Object.values(item).includes(val))
+      );
       this.$emit('click', selectedRow);
     },
   },
@@ -50,10 +63,9 @@ export default {
 }
 
 .custom__table thead {
-  border-bottom: 1px solid #555;
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
-  background-color: #666;
+  border-left: 1px solid rgb(26, 156, 128);
+  border-right: 1px solid rgb(26, 156, 128);
+  background-color: rgb(26, 156, 128);
 }
 .custom__table thead tr td {
   color: #fff;
