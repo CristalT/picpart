@@ -87,6 +87,7 @@ ul {
   flex-wrap: wrap;
 }
 
+
 .gap-xs {
   gap: 5px;
 }
@@ -105,18 +106,24 @@ ul {
 .mr-sm {
   margin-right: 5px;
 }
+.mb-sm {
+  margin-bottom: 5px;
+}
+.mb-md {
+  margin-bottom: 8px;
+}
 
 .form-input {
   width: 100%;
-  padding: 8px;
+  padding: 8px 12px;
   outline: none;
   order: 1px solid #ccc;
   padding: 6px 16px;
-  border-radius: 6px;
+  border-radius: 3px;
   font-size: inherit;
   background-color: #fff;
-  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 .form-input:disabled {
@@ -129,7 +136,7 @@ textarea.form-input {
 }
 
 .form-input:focus {
-  box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .tooltip {
