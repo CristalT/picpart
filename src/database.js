@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, query, limit, getDocs, orderBy, startAfter, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, query, limit, getDocs, orderBy, startAfter, doc, getDoc, where } from 'firebase/firestore';
 import firebaseConfig from './environment/firebaseConfig';
 
 initializeApp(firebaseConfig);
@@ -11,10 +11,14 @@ const store = (path, doc) => {
   return addDoc(collection(db, `${BASE_URL}/${path}`), doc);
 };
 
-const get = async (path, orderByField = null, pageLimitDoc = null) => {
+const get = async (path, { orderByField, pageLimitDoc, search } = {}) => {
   const queryConstraints = [limit(10)];
   if (orderByField) queryConstraints.push(orderBy(orderByField));
   if (pageLimitDoc) queryConstraints.push(startAfter(pageLimitDoc));
+  if (search) {
+    queryConstraints.push(where(search.field, '>=', search.terms))
+    queryConstraints.push(where(search.field, '<=', search.terms + '~'))
+  }
   const firstPage = query(collection(db, `${BASE_URL}/${path}`), ...queryConstraints);
   const documentSnapshots = await getDocs(firstPage);
   const data = [];
@@ -35,11 +39,11 @@ const find = async (path, id) => {
   const docRef = doc(db, `${BASE_URL}/${path}`, id);
   const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    return docSnap.data();
-  } else {
+  if (!docSnap.exists()) {
     throw new Error('No such document');
   }
+
+  return docSnap.data();
 };
 
 export default { store, get, find };
